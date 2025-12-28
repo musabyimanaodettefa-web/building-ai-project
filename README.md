@@ -22,4 +22,53 @@ The project can be expanded by adding real-time attendance, mobile app integrati
 
 ## Acknowledgments
 Inspired by the Building AI course by the University of Helsinki and Reaktor.
+// Example: Safe student data fetching and attendance marking
+
+// Function to fetch student data safely
+async function fetchStudents() {
+  try {
+    // Replace with your actual API endpoint
+    const response = await axios.get('/api/students'); 
+    
+    // Optional chaining + fallback to empty array
+    const students = response?.data || []; 
+    console.log("Fetched students:", students);
+    return students;
+
+  } catch (error) {
+    console.error("Failed to fetch students:", error);
+    return []; // fallback to empty list if error occurs
+  }
+}
+
+// Function to mark attendance based on detected faces
+async function markAttendance(detectedFaces) {
+  const students = await fetchStudents();
+
+  detectedFaces.forEach(face => {
+    // Match detected face to student by unique ID
+    const student = students.find(s => s.id === face.id);
+
+    if (student) {
+      student.attendance = true;
+      console.log(`Marked attendance for ${student.name}`);
+    } else {
+      console.log("Face not recognized in student list:", face.id);
+    }
+  });
+
+  return students; // return updated list with attendance
+}
+
+// Example usage: detectedFaces from your face recognition system
+const detectedFaces = [
+  { id: 101, name: "Alice" },
+  { id: 102, name: "Bob" },
+];
+
+// Mark attendance safely
+markAttendance(detectedFaces).then(updatedStudents => {
+  console.log("Updated student attendance:", updatedStudents);
+});
+
 
